@@ -1,0 +1,31 @@
+<!--  Подключаем базовый шаблон-->
+{% extends 'catalog/base.html' %} {# расширение базового шаблона #}
+{% block content %}
+
+<div class="col-md-4">
+  <div class="card mb-4 box-shadow">
+    <!--      <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">-->
+      <div class="card-body">
+        <p class="card-text">
+          Офис МСК<br>
+          Офис СПБ
+        </p>
+      </div>
+  </div>
+</div>
+<div class="col-md-4">
+  <div class="card mb-4 box-shadow">
+    <!--     <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">-->
+     <div class="card-body">
+        <h2>Напишите нам</h2>
+        <form method="post">
+          {% csrf_token %}
+          <input class="form-control mb-2" name="name" />
+          <input class="form-control mb-2" name="name" />
+          <textarea class="form-control mb-2" name="message" ></textarea>
+          <button type="submit" class="btn btn-primary form-control">Отправить</button>
+        </form>
+     </div>
+  </div>
+</div>
+{% endblock %}
