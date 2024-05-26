@@ -12,7 +12,6 @@ register = template.Library()
 def current_time(format_string):
     return datetime.datetime.now().strftime(format_string)
 
-
 # Создание фильтра, который ВЫДЕЛЯЕТ первый символ строки (Буквица):
 @register.filter(needs_autoescape=True)
 def initial_letter_filter(text, autoescape=True):
@@ -24,9 +23,9 @@ def initial_letter_filter(text, autoescape=True):
     result = "<strong>%s</strong>%s" % (esc(first), esc(other))
     return mark_safe(result)
 
-# Создание фильтра,
+# Создание фильтра, добавляющего актуальный путь до каталога с рисунками
 @register.filter()
 def media_filter(data):
     if data:
-        return f'/media/product/{data}'
-    return '#'
+        return f"/media/product/{data}"
+    return "#"

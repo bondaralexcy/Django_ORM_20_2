@@ -4,18 +4,14 @@ from catalog.models import Product
 
 def index(request):
     products_list = Product.objects.all()
-    # print(products_list)
-    context = {
-        'object_list': products_list,
-        'title': 'Главная страница'
-    }
+    context = {"object_list": products_list, "title": "Главная страница"}
     return render(request, "catalog/index.html", context)
 
+
 def product_detail(request, pk):
+    """Запрашиваем информацию о продукте с id = pk"""
     product = get_object_or_404(Product, pk=pk)
-    context = {'product': product,
-               'title': 'Информация о товаре'
-               }
+    context = {"product": product, "title": "Информация о товаре"}
     return render(request, "catalog/product_detail.html", context)
 
 
@@ -26,5 +22,5 @@ def contact(request):
         message = request.POST.get("message")
         print(f"{name} ({email}): {message}")
 
-    context = {'title': 'Контакты'}
+    context = {"title": "Контакты"}
     return render(request, "catalog/contact.html", context)

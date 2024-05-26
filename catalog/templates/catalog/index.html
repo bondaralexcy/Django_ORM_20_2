@@ -1,30 +1,18 @@
 <!--  Подключаем базовый шаблон-->
 {% extends 'catalog/base.html' %} {# расширение базового шаблона #}
 {% block content %}
-<!--  {{ object_list.0 }}-->
-<!--  {{ object_list.count }}-->
-    {% for object in object_list %}
+    {% for object in object_list %} {# Цикл по всем объектам в каталоге #}
         <div class="col-md-4">
           <div class="card mb-4 box-shadow">
-<!--        <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">-->
             <div class="card-body">
               <p class="card-text">
-                  {{object}}
+                  {{object}} {# Информация о товаре (длина сообщения обрезана до 100 символов в методе __str__ класса Product) #}
               </p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-<!--                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>-->
-<!--                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>-->
                   <a href="{% url 'catalog:product_detail' object.pk %}">Посмотреть</a>
-<!--                  <a class="btn btn-primary" href="{% url 'catalog:product_detail' object.pk %}" role="button">Посмотреть</a>  -->
                 </div>
-
-
-<!--           <small class="text-muted">9 mins</small>-->
               </div>
-
-<!--                <a href="catalog/product_detail" class="btn btn-success">View</a>-->
-
             </div>
           </div>
         </div>
