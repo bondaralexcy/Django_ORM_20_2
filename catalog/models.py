@@ -73,4 +73,4 @@ class Product(models.Model):
 
     def __str__(self):
         # Обрезаем описание продукта до 100 символов
-        return f"{self.name} - {self.description}. Цена: {self.price}"[0:100]
+        return f"{self.name} - {self.description}. Цена: {self.price}"

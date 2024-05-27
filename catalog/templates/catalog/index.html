@@ -6,7 +6,7 @@
           <div class="card mb-4 box-shadow">
             <div class="card-body">
               <p class="card-text">
-                  {{object}} {# Информация о товаре (длина сообщения обрезана до 100 символов в методе __str__ класса Product) #}
+                  {{ object|truncatechars:90  }} {# Информация о товаре (длина сообщения обрезана до 100 символов) #}
               </p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
