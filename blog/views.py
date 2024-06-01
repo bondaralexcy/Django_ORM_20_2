@@ -22,9 +22,9 @@ class BlogListView(ListView):
     )
     extra_context = {"title": "Разговоры"}  # Передача статических данных
 
-    def get_queryset(self):
+    def get_queryset(self, *args, **kwargs):
         """ Выводим только опублткованные статьи """
-        queryset = super().get_queryset()
+        queryset = super().get_queryset(*args, **kwargs)
         return queryset.filter(is_published=True)
 
 
@@ -64,11 +64,21 @@ class BlogUpdateView(UpdateView):
     model = Blog
     fields = ["title", "content", "image", "is_published"]
     extra_context = {"title": "Изменить"}
+    # success_url = reverse_lazy("blog:blog_list") # Заменили на метод get_success_url()
+
+    def form_valid(self, form):
+        if form.is_valid():
+            new_blog = form.save()
+            new_blog.slug = slugify(new_blog.title)
+            new_blog.save()
+
+        return super().form_valid(form)
 
     def get_success_url(self):
         """ После успешного редактирования записи
         необходимо перенаправлять пользователя на просмотр этой статьи."""
         return reverse("blog:blog_detail", args=[self.kwargs.get("pk")])
+
 
 
 class BlogDeleteView(DeleteView):
