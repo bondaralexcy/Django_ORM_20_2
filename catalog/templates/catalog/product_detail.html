@@ -15,10 +15,8 @@
                             <p class="card-text">Цена: {{ product.price }} рублей</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <div class="container">
-                                          <a href="#">В корзину</a>
-                                          <a href="{% url 'catalog:index' %}"><br>На главную</a>
-                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">В корзину</button>
+                                    <a class="btn btn-primary" href="{% url 'catalog:product_list' %}" role="button">Назад</a>
                                 </div>
                             </div>
                             <p><small><br>Добавлен {{product.created_at}}</small></p>
