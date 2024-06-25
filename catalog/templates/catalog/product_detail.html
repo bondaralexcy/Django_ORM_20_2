@@ -2,29 +2,31 @@
 {% extends 'catalog/base.html' %} {# Подключаем базовый шаблон #}
 {% block content %}
 {% load my_tags %} {# Будем использовать фильтр media_filter #}
-    <div class="album py-5 bg-body-tertiary">
-        <div class="container">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="col-md-6">
-                    <div class="card mb-6 shadow-sm">
-                        <img class="card-img-top" src="{{ product.image | media_filter }}">
-                        <div class="card-body">
-                            <p class="card-text">{{ product.name }}</p>
-                            <p class="card-text">Категория: {{ product.category }}</p>
-                            <p class="card-text">{{ product.description }}</p>
-                            <p class="card-text">Цена: {{ product.price }} рублей</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">В корзину</button>
-                                    <a class="btn btn-primary" href="{% url 'catalog:product_list' %}" role="button">Назад</a>
-                                </div>
-                            </div>
-                            <p><small><br>Добавлен {{product.created_at}}</small></p>
-                            <p><small>Изменен {{product.updated_at}}</small></p>
+
+  <div class="col-12">
+      <div class="row">
+        <div class="col-6">
+            <div class="card">
+                {% if product.image %}
+                    <img class="card-img-top" src="{{ product.image | media_filter }}">
+                {% endif %}
+                <div class="card-body">
+                    <p class="card-text">{{ product.name }}</p>
+                    <p class="card-text">Категория: {{ product.category }}</p>
+                    <p class="card-text">{{ product.description }}</p>
+                    <p class="card-text">Цена: {{ product.price }} рублей</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">В корзину</button>
+                            <a class="btn btn-primary" href="{% url 'catalog:product_list' %}" role="button">Назад</a>
                         </div>
                     </div>
+                    <p><small><br>Добавлен {{product.created_at}}</small></p>
+                    <p><small>Изменен {{product.updated_at}}</small></p>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
 {% endblock %}

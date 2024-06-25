@@ -27,6 +27,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("catalog.urls", namespace="catalog")),
     path("", include("blog.urls", namespace="blog")),
+    path("users/", include("users.urls", namespace="users")),
 ]
 # - настроить обработку вывода этих файлов для сервера разработки:
 if settings.DEBUG:

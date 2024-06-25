@@ -1,26 +1,35 @@
 {% extends 'catalog/base.html'%}
 {% load my_tags %}
 {% block content %}
+
+{% if user.is_authenticated %}
+<div class="col-12 mb-5">
+    <a class="btn btn-outline-primary" href="{% url 'catalog:create_product' %}">Добавить продукт</a>
+</div>
+{% endif %}
+
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-    {% for object in object_list %} {# Цикл по всем объектам в каталоге #}
+    {% for product in object_list %} {# Цикл по всем объектам в каталоге #}
         <div class="col-md-4">
           <div class="card mb-4 box-shadow">
             <div class="card-body">
               <p class="card-text">
-                  {{ object|truncatechars:90  }} {# Информация о товаре (длина сообщения обрезана до 100 символов) #}
+                  {{ product|truncatechars:90  }} {# Информация о товаре (длина сообщения обрезана до 100 символов) #}
               </p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <a href="{% url 'catalog:product_detail' object.pk %}">Посмотреть</a>
-                  <a href="{% url 'catalog:edit_product' object.pk %}">Редактировать</a>
-                  <a href="{% url 'catalog:delete_product' object.pk %}">Удалить</a>
+                  <a href="{% url 'catalog:product_detail' product.pk %}">Посмотреть</a>
+                  {% if user == product.owner or user.is_superuser %}
+                      <a href="{% url 'catalog:edit_product' product.pk %}">Редактировать</a>
+                      <a href="{% url 'catalog:delete_product' product.pk %}">Удалить</a>
+                  {% endif %}
                 </div>
               </div>
             </div>
             <p class="card-footer">
-                Версия: {{ object.active_version }}
-                {% if object.number_version %}
-                - {{ object.number_version }}
+                Версия: {{ product.active_version }}
+                {% if product.number_version %}
+                    - {{ product.number_version }}
                 {% endif %}
             </p>
           </div>

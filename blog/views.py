@@ -23,7 +23,7 @@ class BlogListView(ListView):
     extra_context = {"title": "Разговоры"}  # Передача статических данных
 
     def get_queryset(self, *args, **kwargs):
-        """ Выводим только опублткованные статьи """
+        """Выводим только опублткованные статьи"""
         queryset = super().get_queryset(*args, **kwargs)
         return queryset.filter(is_published=True)
 
@@ -34,17 +34,18 @@ class BlogDetailView(DetailView):
     extra_context = {"title": "Детализация"}
 
     def get_object(self, queryset=None):
-        """ Метод get_object() получает данные из вызова метода get_object() родителя
-         и возвращает измененный объект
-         """
+        """Метод get_object() получает данные из вызова метода get_object() родителя
+        и возвращает измененный объект
+        """
         self.object = super().get_object(queryset)
-        self.object.views_count += 1        # Счетчик просмотров
+        self.object.views_count += 1  # Счетчик просмотров
         self.object.save()
         return self.object
 
 
 class BlogCreateView(CreateView):
-    """ При создании нового блога динамически формировать slug name для заголовка"""
+    """При создании нового блога динамически формировать slug name для заголовка"""
+
     model = Blog
     fields = ["title", "content", "image", "is_published"]
     success_url = reverse_lazy("blog:blog_list")
@@ -75,10 +76,9 @@ class BlogUpdateView(UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        """ После успешного редактирования записи
+        """После успешного редактирования записи
         необходимо перенаправлять пользователя на просмотр этой статьи."""
         return reverse("blog:blog_detail", args=[self.kwargs.get("pk")])
-
 
 
 class BlogDeleteView(DeleteView):

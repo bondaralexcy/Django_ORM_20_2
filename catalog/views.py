@@ -1,5 +1,4 @@
 # from django.http import HttpResponseRedirect
-#
 # from django.shortcuts import render, get_object_or_404
 from django.forms import inlineformset_factory
 from django.views.generic import (
@@ -9,13 +8,14 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
     TemplateView,
-
 )
 from django.urls import reverse_lazy, reverse
 from pytils.translit import slugify
 from catalog.models import Product, Contact, Version
 from catalog.forms import ProductForm, VersionForm, VersionFormset
-# from django.forms import inlineformset_factory
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+
 
 class Homepage(TemplateView):
     Model = Contact
@@ -30,11 +30,13 @@ class Homepage(TemplateView):
         context_data["total_count"] = Contact.objects.all().count()
         return context_data
 
+
 # CBV
-class ProductListView(ListView):
+class ProductListView(ListView, LoginRequiredMixin):
     """
     Контроллер отвечает за отображение списка продуктов
     """
+
     model = Product
     # template_name = "catalog/index.html"
     # context_object_name = (
@@ -53,69 +55,73 @@ class ProductListView(ListView):
                 product.active_version = activ_version.last().name
                 product.number_version = activ_version.last().number
             else:
-                product.active_version = 'Нет активной версии'
+                product.active_version = "Нет активной версии"
 
-        context_data['object_list'] = list_product
+        context_data["object_list"] = list_product
         return context_data
 
 
-
 # CBV
-class ProductDetailView(DetailView):
+class ProductDetailView(DetailView, LoginRequiredMixin):
     """
     Контроллер отвечает за отображение детальной информации о продукте
     """
+
     model = Product
     template_name = "catalog/product_detail.html"
     extra_context = {"title": "Информация о товаре"}
 
 
-
-
-class ProductCreateView(CreateView):
+class ProductCreateView(CreateView, LoginRequiredMixin):
     """
     Контроллер отвечает за создание продукта
     """
+
     model = Product
     # fields = ("name", "category", "description", "purchase_price", "image")
     form_class = ProductForm
-    success_url = reverse_lazy("catalog:products")
+    success_url = reverse_lazy("catalog:product_list")
     extra_context = {"title": "Новый товар"}
 
     def form_valid(self, form):
-        if form.is_valid():
-            new_prod = form.save()
-            new_prod.slug = slugify(new_prod.name)
-            new_prod.save()
+        product = form.save()
+        user = self.request.user
+        product.owner = user
+        product.slug = slugify(product.name)
+        product.save()
 
         return super().form_valid(form)
 
+    # def get_success_url(self):
+    #     return reverse('catalog:product_list')
 
-class ProductUpdateView(UpdateView):
+
+class ProductUpdateView(UpdateView, LoginRequiredMixin):
     """
     Контроллер отвечает за изменение продукта
     """
+
     model = Product
-    # fields = ("name", "category", "description", "purchase_price", "image")
     form_class = ProductForm
-    # success_url = reverse_lazy("catalog:product")
     extra_context = {"title": "Внести изменения"}
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        ProductFormset = inlineformset_factory(Product, Version, form=VersionForm, formset=VersionFormset, extra=1)
+        ProductFormset = inlineformset_factory(
+            Product, Version, form=VersionForm, formset=VersionFormset, extra=1
+        )
         # print(f'Method = {self.request.method}')
-        if self.request.method == 'POST':
+        if self.request.method == "POST":
             # Передаем в контекст действия, выполненные в формсете SubjectFormset
-            context_data['formset'] = ProductFormset(self.request.POST, instance=self.object)
+            context_data["formset"] = ProductFormset(
+                self.request.POST, instance=self.object
+            )
         else:
-            context_data['formset'] = ProductFormset(instance=self.object)
+            context_data["formset"] = ProductFormset(instance=self.object)
         return context_data
 
-
     def get_success_url(self):
-        return reverse('catalog:product_detail', args=[self.kwargs.get('pk')])
-
+        return reverse("catalog:product_detail", args=[self.kwargs.get("pk")])
 
     def form_valid(self, form):
         context_data = self.get_context_data()
@@ -130,21 +136,30 @@ class ProductUpdateView(UpdateView):
             formset.save()
             return super().form_valid(form)
         else:
-            return self.render_to_response(self.get_context_data(form=form, formset=formset))
+            return self.render_to_response(
+                self.get_context_data(form=form, formset=formset)
+            )
 
 
-
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(DeleteView, LoginRequiredMixin):
     """
     Контроллер отвечает за удаление продукта
     """
+
     model = Product
-    success_url = reverse_lazy("catalog:products")
+    success_url = reverse_lazy("catalog:product_list")
     extra_context = {"title": "Удалить товар"}
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user == self.object.owner or self.request.user.is_superuser:
+            return self.object
+        raise PermissionDenied
 
 
 class ContactsPageViews(CreateView):
-    """ Сохранить информацию о контакте"""
+    """Сохранить информацию о контакте"""
+
     model = Contact
     fields = (
         "name",
@@ -154,6 +169,7 @@ class ContactsPageViews(CreateView):
     success_url = reverse_lazy("catalog:contact")
     template_name = "catalog/contact.html"
     extra_context = {"title": "Сохранить контакт"}
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         number = len(Contact.objects.all())
@@ -162,7 +178,6 @@ class ContactsPageViews(CreateView):
         else:
             context["latest_contacts"] = Contact.objects.all()
         return context
-
 
     # def post(self, request, *args, **kwargs):
     # # Это метод из предыдущей реализации. Сохраняет данные в csv-файл
