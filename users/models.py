@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
 # Create your models here.
 
 
@@ -13,18 +12,21 @@ class User(AbstractUser):
         max_length=35,
         verbose_name="Телефон",
         null=True,
+        blank=True,
         help_text="Введите номер телефона",
     )
     avatar = models.ImageField(
         upload_to="users/avatars/",
         verbose_name="Аватар",
         null=True,
+        blank=True,
         help_text="Загрузите свой аватар",
     )
     country = models.CharField(
         max_length=20,
         verbose_name="Страна",
         null=True,
+        blank=True,
         help_text="Введите наименование страны пребывания",
     )
     token = models.CharField(max_length=100, verbose_name="Token", null=True)

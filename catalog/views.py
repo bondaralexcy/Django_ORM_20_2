@@ -1,5 +1,5 @@
-# from django.http import HttpResponseRedirect
-# from django.shortcuts import render, get_object_or_404
+
+from django.shortcuts import render, get_object_or_404
 from django.forms import inlineformset_factory
 from django.views.generic import (
     ListView,
@@ -12,10 +12,10 @@ from django.views.generic import (
 from django.urls import reverse_lazy, reverse
 from pytils.translit import slugify
 from catalog.models import Product, Contact, Version
-from catalog.forms import ProductForm, VersionForm, VersionFormset
-from django.contrib.auth.mixins import LoginRequiredMixin
+from catalog.forms import ProductForm, VersionForm, VersionFormset, ProductModeratorForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
-
+from django.http import HttpResponseForbidden
 
 class Homepage(TemplateView):
     Model = Contact
@@ -70,6 +70,14 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = "catalog/product_detail.html"
     extra_context = {"title": "Информация о товаре"}
+
+    # def get_object(self, queryset=None):
+    #     self.object = super().get_object(queryset)
+    #     if self.request.user == self.object.owner:
+    #         return self.object
+    #     raise PermissionDenied
+
+
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -139,6 +147,26 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
             return self.render_to_response(
                 self.get_context_data(form=form, formset=formset)
             )
+
+    def get_form_class(self):
+        user = self.request.user
+
+        print(f'user {user.email} has_perm = {user.has_perm("can_reset_published")}')
+        if user == self.object.owner:
+            print("user == Owner")
+            return ProductForm
+        else:
+            # Права доступа проверяются в шаблоне
+            return ProductModeratorForm
+
+        # Так почему-то не работает
+        # if (user.has_perm('can_reset_published')
+        #         and user.has_perm('can_edit_description')
+        #         and user.has_perm('can_edit_category')):
+        #     print("user == Moderator")
+        #     return ProductModeratorForm
+        # raise PermissionDenied
+
 
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):

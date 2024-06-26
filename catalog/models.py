@@ -89,6 +89,11 @@ class Product(models.Model):
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
         ordering = ["name"]
+        permissions = [
+            ("can_reset_published", "Can Reset is_published"),
+            ("can_edit_description", "Can Edit Any Description"),
+            ("can_edit_category", "Can Edit Product Category"),
+        ]
 
     def __str__(self):
         # Обрезаем описание продукта до 100 символов
