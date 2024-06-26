@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'django_dump_load_utf8',
 
+    'django_dump_load_utf8',
     "catalog",
     "blog",
     "users",
@@ -139,7 +139,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465        # для  EMAIL_USE_TLS = True = 587
+EMAIL_PORT = 465        # для  EMAIL_USE_TLS = True --> 587
 
 EMAIL_HOST_USER = os.getenv('MY_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('MY_EMAIL_HOST_PASSWORD')
@@ -149,4 +149,5 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 EMAIL_ADMIN = EMAIL_HOST_USER
 
+EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True

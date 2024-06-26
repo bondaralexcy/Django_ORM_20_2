@@ -32,7 +32,7 @@ class Homepage(TemplateView):
 
 
 # CBV
-class ProductListView(ListView, LoginRequiredMixin):
+class ProductListView(LoginRequiredMixin, ListView):
     """
     Контроллер отвечает за отображение списка продуктов
     """
@@ -62,7 +62,7 @@ class ProductListView(ListView, LoginRequiredMixin):
 
 
 # CBV
-class ProductDetailView(DetailView, LoginRequiredMixin):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     """
     Контроллер отвечает за отображение детальной информации о продукте
     """
@@ -72,7 +72,7 @@ class ProductDetailView(DetailView, LoginRequiredMixin):
     extra_context = {"title": "Информация о товаре"}
 
 
-class ProductCreateView(CreateView, LoginRequiredMixin):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     """
     Контроллер отвечает за создание продукта
     """
@@ -96,7 +96,7 @@ class ProductCreateView(CreateView, LoginRequiredMixin):
     #     return reverse('catalog:product_list')
 
 
-class ProductUpdateView(UpdateView, LoginRequiredMixin):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """
     Контроллер отвечает за изменение продукта
     """
@@ -141,7 +141,7 @@ class ProductUpdateView(UpdateView, LoginRequiredMixin):
             )
 
 
-class ProductDeleteView(DeleteView, LoginRequiredMixin):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     """
     Контроллер отвечает за удаление продукта
     """
