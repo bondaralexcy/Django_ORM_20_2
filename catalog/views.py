@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, get_object_or_404
 from django.forms import inlineformset_factory
 from django.views.generic import (
@@ -15,7 +14,7 @@ from catalog.models import Product, Contact, Version
 from catalog.forms import ProductForm, VersionForm, VersionFormset, ProductModeratorForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseForbidden
+# from django.http import HttpResponseForbidden
 
 class Homepage(TemplateView):
     Model = Contact
@@ -149,23 +148,19 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
             )
 
     def get_form_class(self):
+        """ Открываем форму, зависящую от уровня доступа пользователя"""
         user = self.request.user
-
-        print(f'user {user.email} has_perm = {user.has_perm("can_reset_published")}')
-        if user == self.object.owner:
-            print("user == Owner")
+        if user == self.object.owner or user.is_superuser:
+            # для владельца товара
             return ProductForm
-        else:
-            # Права доступа проверяются в шаблоне
+
+        if (user.has_perm('catalog.can_reset_published')
+                and user.has_perm('catalog.can_edit_description')
+                and user.has_perm('catalog.can_edit_category')):
+            # для Модератора
             return ProductModeratorForm
 
-        # Так почему-то не работает
-        # if (user.has_perm('can_reset_published')
-        #         and user.has_perm('can_edit_description')
-        #         and user.has_perm('can_edit_category')):
-        #     print("user == Moderator")
-        #     return ProductModeratorForm
-        # raise PermissionDenied
+        raise PermissionDenied
 
 
 

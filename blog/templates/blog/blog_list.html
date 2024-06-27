@@ -10,7 +10,9 @@
             {% for object in object_list %}
             <div class="col">
                 <div class="card shadow-sm">
+                    {% if object.image %}
                     <img src="{{ object.image | media_filter }}">
+                    {% endif %}
                     <div class="card-body">
                         <p class="card-text">{{ object.title }}</p>
                         <p class="card-text">{{ object.content|truncatewords:50 }}</p>

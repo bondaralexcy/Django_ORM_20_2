@@ -91,6 +91,7 @@ def reset_password(request):
         context = {
             "success_message": "Новый пароль был отправлен на адрес вашей электронной почты.",
         }
+        # print({password})
         return render(request, "users/reset_password.html", context)
 
     return render(request, "users/reset_password.html")

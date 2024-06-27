@@ -10,17 +10,20 @@ from django.views.generic import (
     DeleteView,
 )
 from pytils.translit import slugify
-
 from blog.models import Blog
+from blog.forms import BlogForm, BlogManagerForm
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 
 
-class BlogListView(ListView):
+class BlogListView(LoginRequiredMixin, ListView):
     model = Blog
     template_name = "blog/blog_list.html"
     context_object_name = (
         "object_list"  # Это было не обязательно. По умолчанию и так object_list
     )
     extra_context = {"title": "Разговоры"}  # Передача статических данных
+    login_url = "catalog:home"
 
     def get_queryset(self, *args, **kwargs):
         """Выводим только опублткованные статьи"""
@@ -28,7 +31,7 @@ class BlogListView(ListView):
         return queryset.filter(is_published=True)
 
 
-class BlogDetailView(DetailView):
+class BlogDetailView(LoginRequiredMixin, DetailView):
     model = Blog
     template_name = "blog/blog_detail.html"
     extra_context = {"title": "Детализация"}
@@ -43,7 +46,7 @@ class BlogDetailView(DetailView):
         return self.object
 
 
-class BlogCreateView(CreateView):
+class BlogCreateView(LoginRequiredMixin, CreateView):
     """При создании нового блога динамически формировать slug name для заголовка"""
 
     model = Blog
@@ -52,18 +55,20 @@ class BlogCreateView(CreateView):
     extra_context = {"title": "Создать"}
 
     def form_valid(self, form):
-        if form.is_valid():
-            new_blog = form.save()
-            new_blog.slug = slugify(new_blog.title)
-            new_blog.save()
+        blog = form.save()
+        user = self.request.user
+        blog.owner = user
+        blog.slug = slugify(blog.name)
+        blog.save()
 
         return super().form_valid(form)
 
 
-class BlogUpdateView(UpdateView):
+class BlogUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Blog
-    fields = ["title", "content", "image", "is_published"]
+    form_class = BlogForm
+    # fields = ["title", "content", "image", "is_published"]
     extra_context = {"title": "Изменить"}
     # success_url = reverse_lazy("blog:blog_list") # Заменили на метод get_success_url()
 
@@ -81,7 +86,17 @@ class BlogUpdateView(UpdateView):
         return reverse("blog:blog_detail", args=[self.kwargs.get("pk")])
 
 
-class BlogDeleteView(DeleteView):
+    def get_form_class(self):
+        """ Открываем форму, зависящую от уровня доступа пользователя"""
+        user = self.request.user
+        # Для Менеджера
+        if user.has_perm('blog.can_reset_published'):
+            return BlogManagerForm
+        else:
+            # для всех остальных
+            return BlogForm
+
+class BlogDeleteView(LoginRequiredMixin, DeleteView):
     model = Blog
     success_url = reverse_lazy("blog:blog_list")
     extra_context = {"title": "Удалить"}
