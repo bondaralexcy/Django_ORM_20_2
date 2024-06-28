@@ -7,14 +7,16 @@
         <li><a href="{% url 'catalog:home' %}" class="text-white">Главная страница</a></li>
 
         <li><a href="{% url 'catalog:product_list' %}" class="text-white">Каталог товаров</a></li>
+        <li><a href="{% url 'catalog:categories_list' %}" class="text-white">Категории</a></li>
         <li><a href="{% url 'catalog:contact' %}" class="text-white">Контакты</a></li>
         <li><a href="{% url 'blog:blog_list' %}" class="text-white">Блог</a></li>
-        <hr>
         {% if user.is_authenticated %}
+          <hr>
           <li><a href="{% url 'users:reset_password' %}" class="text-white">Сброс пароля</a></li>
           <li><a href="{% url 'users:profile' %}" class="text-white">Профиль</a></li>
           <li><a href="{% url 'users:logout' %}" class="text-white">Выход</a></li>
         {% else %}
+          <hr>
           <li><a href="{% url 'users:login' %}" class="text-white">Вход</a></li>
           <li><a href="{% url 'users:register' %}" class="text-white">Регистрация</a></li>
         {% endif %}

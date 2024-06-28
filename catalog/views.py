@@ -10,11 +10,12 @@ from django.views.generic import (
 )
 from django.urls import reverse_lazy, reverse
 from pytils.translit import slugify
-from catalog.models import Product, Contact, Version
+from catalog.models import Product, Contact, Version, Category
 from catalog.forms import ProductForm, VersionForm, VersionFormset, ProductModeratorForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 # from django.http import HttpResponseForbidden
+from catalog.services import get_categories_from_cache, get_products_from_cache
 
 class Homepage(TemplateView):
     Model = Contact
@@ -35,7 +36,6 @@ class ProductListView(LoginRequiredMixin, ListView):
     """
     Контроллер отвечает за отображение списка продуктов
     """
-
     model = Product
     # template_name = "catalog/index.html"
     # context_object_name = (
@@ -59,6 +59,8 @@ class ProductListView(LoginRequiredMixin, ListView):
         context_data["object_list"] = list_product
         return context_data
 
+    def get_queryset(self):
+        return get_products_from_cache()
 
 # CBV
 class ProductDetailView(LoginRequiredMixin, DetailView):
@@ -75,7 +77,6 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
     #     if self.request.user == self.object.owner:
     #         return self.object
     #     raise PermissionDenied
-
 
 
 
@@ -101,6 +102,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
     # def get_success_url(self):
     #     return reverse('catalog:product_list')
+
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
@@ -180,6 +182,7 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
         raise PermissionDenied
 
 
+
 class ContactsPageViews(CreateView):
     """Сохранить информацию о контакте"""
 
@@ -214,3 +217,15 @@ class ContactsPageViews(CreateView):
     #     #     writer.writerow([name, phone, message])
     #
     #     return HttpResponseRedirect(self.request.path)
+
+
+
+class CategoryListView(LoginRequiredMixin, ListView):
+    """
+    Контроллер отвечает за отображение списка категорий
+    """
+    model = Category
+    extra_context = {"title": "Список категорий товаров"}
+    def get_queryset(self):
+        # Получить данные из кеша
+        return get_categories_from_cache()
