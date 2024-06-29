@@ -34,7 +34,7 @@ class UserCreateView(CreateView):
         user.save()
 
         # Создаем ссылку, по которой должен перейти пользователь
-        # email-confirm/{token} передает управление методу email_verification (см. urls.py)
+        # .../email-confirm/{token} передает управление методу email_verification (см. urls.py)
         host = self.request.get_host()
         url = f"http://{host}/users/email-confirm/{token}"
 
@@ -68,7 +68,7 @@ def email_verification(request, token):
 
 
 def reset_password(request):
-    """ Метод восстановления пароля зарегистрированного пользователя
+    """Метод восстановления пароля зарегистрированного пользователя
     на автоматически сгенерированный пароль."""
 
     if request.method == "POST":
@@ -91,14 +91,14 @@ def reset_password(request):
         context = {
             "success_message": "Новый пароль был отправлен на адрес вашей электронной почты.",
         }
-        # print({password})
         return render(request, "users/reset_password.html", context)
 
     return render(request, "users/reset_password.html")
 
 
 class ProfileView(UpdateView):
-    """ Контроллер изменения профиля пользователя"""
+    """ Контроллер изменения профиля пользователя
+    """
     model = User
     form_class = UserProfileForm
     success_url = reverse_lazy("catalog:home")

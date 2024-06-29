@@ -2,6 +2,9 @@ from django.core.management import BaseCommand
 import json
 from catalog.models import Category, Product
 
+# Кастомная команда, которая заносит данные в базу данных catalog
+# Из json-файлов
+
 
 class Command(BaseCommand):
 

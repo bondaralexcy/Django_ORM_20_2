@@ -17,6 +17,9 @@ from django.core.exceptions import PermissionDenied
 
 
 class BlogListView(LoginRequiredMixin, ListView):
+    """
+    Контроллер отвечает за отображение списка сообщений
+    """
     model = Blog
     template_name = "blog/blog_list.html"
     context_object_name = (
@@ -32,6 +35,9 @@ class BlogListView(LoginRequiredMixin, ListView):
 
 
 class BlogDetailView(LoginRequiredMixin, DetailView):
+    """
+    Контроллер отвечает за отображение одного сообщения
+    """
     model = Blog
     template_name = "blog/blog_detail.html"
     extra_context = {"title": "Детализация"}
@@ -47,14 +53,17 @@ class BlogDetailView(LoginRequiredMixin, DetailView):
 
 
 class BlogCreateView(LoginRequiredMixin, CreateView):
-    """При создании нового блога динамически формировать slug name для заголовка"""
-
+    """
+    Контроллер отвечает за создание сообщения
+    """
     model = Blog
     fields = ["title", "content", "image", "is_published"]
     success_url = reverse_lazy("blog:blog_list")
     extra_context = {"title": "Создать"}
 
     def form_valid(self, form):
+        """ При создании нового сообщенмя динамически формируется
+            slug name для заголовка"""
         blog = form.save()
         user = self.request.user
         blog.owner = user
@@ -65,12 +74,13 @@ class BlogCreateView(LoginRequiredMixin, CreateView):
 
 
 class BlogUpdateView(LoginRequiredMixin, UpdateView):
-
+    """
+    Контроллер отвечает за редактирование сообщения
+    """
     model = Blog
     form_class = BlogForm
-    # fields = ["title", "content", "image", "is_published"]
     extra_context = {"title": "Изменить"}
-    # success_url = reverse_lazy("blog:blog_list") # Заменили на метод get_success_url()
+
 
     def form_valid(self, form):
         if form.is_valid():
@@ -85,18 +95,21 @@ class BlogUpdateView(LoginRequiredMixin, UpdateView):
         необходимо перенаправлять пользователя на просмотр этой статьи."""
         return reverse("blog:blog_detail", args=[self.kwargs.get("pk")])
 
-
     def get_form_class(self):
-        """ Открываем форму, зависящую от уровня доступа пользователя"""
+        """Открываем форму, зависящую от уровня доступа пользователя"""
         user = self.request.user
         # Для Менеджера
-        if user.has_perm('blog.can_reset_published'):
+        if user.has_perm("blog.can_reset_published"):
             return BlogManagerForm
         else:
             # для всех остальных
             return BlogForm
 
+
 class BlogDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Контроллер отвечает за создание сообщения
+    """
     model = Blog
     success_url = reverse_lazy("blog:blog_list")
     extra_context = {"title": "Удалить"}

@@ -1,11 +1,11 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
-
 from catalog.models import Product, Version
 
 
 class StyleFormMixin:
+    """Класс-миксин для оформления в едином стиле"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -15,11 +15,13 @@ class StyleFormMixin:
 
 
 class ProductForm(StyleFormMixin, forms.ModelForm):
+    """ Основная форма для продукта"""
     class Meta:
         model = Product
         exclude = ("owner",)
 
     def clean_name(self):
+        """ Реализация ограничения на исапользуемые слова в названии"""
         cleaned_data = self.cleaned_data["name"]
         forbidden_words = [
             "казино",
@@ -39,6 +41,7 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
         return cleaned_data
 
     def clean_description(self):
+        """ Реализация ограничения на исапользуемые слова в описании продукта"""
         cleaned_data = self.cleaned_data["description"]
         forbidden_words = [
             "казино",
@@ -59,11 +62,10 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
 
 
 class ProductModeratorForm(StyleFormMixin, forms.ModelForm):
+    """ Форма продукта для пользователя с правами 'Moderator' """
     class Meta:
         model = Product
         fields = ("description", "category", "is_published")
-
-
 
     def clean_description(self):
         cleaned_data = self.cleaned_data["description"]
@@ -85,15 +87,15 @@ class ProductModeratorForm(StyleFormMixin, forms.ModelForm):
         return cleaned_data
 
 
-
 class VersionForm(StyleFormMixin, forms.ModelForm):
+    """ Форма для Version"""
     class Meta:
         model = Version
         fields = "__all__"
 
 
 class VersionFormset(BaseInlineFormSet):
-
+    """ Формсет для Version"""
     def clean(self):
         active_count = 0
         for form in self.forms:

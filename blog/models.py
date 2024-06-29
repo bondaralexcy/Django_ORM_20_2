@@ -1,6 +1,5 @@
 from django.db import models
 from users.models import User
-# Create your models here.
 
 
 class Blog(models.Model):
@@ -15,9 +14,9 @@ class Blog(models.Model):
     )
     is_published = models.BooleanField(default=True, verbose_name="опубликовано")
     views_count = models.PositiveIntegerField(verbose_name="просмотры", default=0)
-    owner = models.ForeignKey(User, verbose_name="Владелец", on_delete=models.SET_NULL, null=True, blank=True)
-
-
+    owner = models.ForeignKey(
+        User, verbose_name="Владелец", on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     def __str__(self):
         return self.title
@@ -28,7 +27,3 @@ class Blog(models.Model):
         permissions = [
             ("can_reset_published", "Can Reset is_published"),
         ]
-
-
-
-

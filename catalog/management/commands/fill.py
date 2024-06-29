@@ -21,16 +21,6 @@ class Command(BaseCommand):
         with open("product.json", encoding="utf-8") as json_file:
             return json.load(json_file)
 
-    # def handle(self, *args, **options):
-    # Пример заполнения таблиц БД из кода
-    #     category_list = [
-    #         {'category_name': 'Хлеб', 'descr': 'Хлеб и выпечка'},
-    #         {'category_name': 'Молоко', 'descr': 'Вся молочка'},
-    #         {'category_name': 'Напитки', 'descr': 'Соки и газировка'}
-    #     ]
-    #
-    #     for category_item in category_list:
-    #         Category.objects.create(**category_item)
 
     def handle(self, *args, **options):
         # Cброс автоинкремента
@@ -56,7 +46,7 @@ class Command(BaseCommand):
 
         # Создаем объекты в базе с помощью метода bulk_create()
         Category.objects.bulk_create(category_list)
-        # print("Category - done")
+        print("Category - done")
 
         # Обходим все значения продуктов из фиктсуры
         for product in Command.json_read_products():

@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+
 # Create your models here.
 
 
 class User(AbstractUser):
-    """ Добавил модель для пользователя.
-        Задал электронную почту как поле для авторизации."""
+    """Добавил модель для пользователя.
+    Задал электронную почту как поле для авторизации."""
+
     username = None
     email = models.EmailField(unique=True, verbose_name="Email")
     phone = models.CharField(

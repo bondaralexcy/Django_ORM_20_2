@@ -16,7 +16,6 @@
               <p class="card-text">
                   {{ object|truncatechars:90  }} {# Информация о товаре (длина сообщения обрезана до 100 символов) #}
               </p>
-
                 <div class="container-buttons">
                   {% if user == object.owner or user.is_superuser %}
                     <a href="{% url 'catalog:product_detail' object.pk %}">Посмотреть</a>
@@ -26,11 +25,8 @@
                   {% elif perms.catalog.can_edit_description %}
                     <a href="{% url 'catalog:edit_product' object.pk %}">Редактировать</a>
                   {% endif %}
-
-
                 </div>
               </div>
-
             <p class="card-footer">
                 Версия: {{ object.active_version }}
                 {% if object.number_version %}

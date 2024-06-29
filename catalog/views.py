@@ -14,12 +14,13 @@ from catalog.models import Product, Contact, Version
 from catalog.forms import ProductForm, VersionForm, VersionFormset, ProductModeratorForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
-# from django.http import HttpResponseForbidden
+
+
 
 class Homepage(TemplateView):
+    """ Контроллер главной формы проекта"""
     Model = Contact
     template_name = "catalog/base.html"
-    # random_article = Blog.objects.order_by('?')[:3]
     random_article = Contact.objects.all()
     extra_context = {"title": "Новый интернет-магазин"}
 
@@ -30,17 +31,12 @@ class Homepage(TemplateView):
         return context_data
 
 
-# CBV
+
 class ProductListView(LoginRequiredMixin, ListView):
     """
     Контроллер отвечает за отображение списка продуктов
     """
-
     model = Product
-    # template_name = "catalog/index.html"
-    # context_object_name = (
-    #     "object_list"  # Это было не обязательно. По умолчанию и так object_list
-    # )
     extra_context = {"title": "Каталог товаров"}  # Передача статических данных
 
     def get_context_data(self, *args, **kwargs):
@@ -60,22 +56,14 @@ class ProductListView(LoginRequiredMixin, ListView):
         return context_data
 
 
-# CBV
+
 class ProductDetailView(LoginRequiredMixin, DetailView):
     """
     Контроллер отвечает за отображение детальной информации о продукте
     """
-
     model = Product
     template_name = "catalog/product_detail.html"
     extra_context = {"title": "Информация о товаре"}
-
-    # def get_object(self, queryset=None):
-    #     self.object = super().get_object(queryset)
-    #     if self.request.user == self.object.owner:
-    #         return self.object
-    #     raise PermissionDenied
-
 
 
 
@@ -83,9 +71,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     """
     Контроллер отвечает за создание продукта
     """
-
     model = Product
-    # fields = ("name", "category", "description", "purchase_price", "image")
     form_class = ProductForm
     success_url = reverse_lazy("catalog:product_list")
     extra_context = {"title": "Новый товар"}
@@ -99,15 +85,13 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
         return super().form_valid(form)
 
-    # def get_success_url(self):
-    #     return reverse('catalog:product_list')
+
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """
-    Контроллер отвечает за изменение продукта
+    Контроллер отвечает за редактирование информации о продукте
     """
-
     model = Product
     form_class = ProductForm
     extra_context = {"title": "Внести изменения"}
@@ -117,7 +101,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         ProductFormset = inlineformset_factory(
             Product, Version, form=VersionForm, formset=VersionFormset, extra=1
         )
-        # print(f'Method = {self.request.method}')
+        print(f'Method = {self.request.method}')
         if self.request.method == "POST":
             # Передаем в контекст действия, выполненные в формсете SubjectFormset
             context_data["formset"] = ProductFormset(
@@ -138,7 +122,6 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
             new_prod.slug = slugify(new_prod.name)
             new_prod.save()
 
-            # self.object = form.save()
             formset.instance = new_prod
             formset.save()
             return super().form_valid(form)
@@ -148,20 +131,21 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
             )
 
     def get_form_class(self):
-        """ Открываем форму, зависящую от уровня доступа пользователя"""
+        """Открываем форму, зависящую от уровня доступа пользователя"""
         user = self.request.user
         if user == self.object.owner or user.is_superuser:
             # для владельца товара
             return ProductForm
 
-        if (user.has_perm('catalog.can_reset_published')
-                and user.has_perm('catalog.can_edit_description')
-                and user.has_perm('catalog.can_edit_category')):
+        if (
+            user.has_perm("catalog.can_reset_published")
+            and user.has_perm("catalog.can_edit_description")
+            and user.has_perm("catalog.can_edit_category")
+        ):
             # для Модератора
             return ProductModeratorForm
 
         raise PermissionDenied
-
 
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
@@ -202,15 +186,3 @@ class ContactsPageViews(CreateView):
             context["latest_contacts"] = Contact.objects.all()
         return context
 
-    # def post(self, request, *args, **kwargs):
-    # # Это метод из предыдущей реализации. Сохраняет данные в csv-файл
-    #     name = request.POST.get("name", "")
-    #     email = request.POST.get("email", "")
-    #     message = request.POST.get("message", "")
-    #     print(f"{name} ({email}): {message}")
-    #
-    #     # with open('contact_info.csv', mode='a', newline='') as file:
-    #     #     writer = csv.writer(file)
-    #     #     writer.writerow([name, phone, message])
-    #
-    #     return HttpResponseRedirect(self.request.path)
